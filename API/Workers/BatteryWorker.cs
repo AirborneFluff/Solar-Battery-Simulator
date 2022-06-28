@@ -24,7 +24,7 @@ namespace API.Workers
 
             var result = await _geotogether.Login(loginData.Identity, loginData.Password); // Email and password, get from private json
             if (result == null) return;
-            
+
             _logger.LogInformation("Logged in: " + result.Email);
 
             await _geotogether.SetDeviceId();
@@ -32,7 +32,7 @@ namespace API.Workers
             while (!cancellationToken.IsCancellationRequested)
             {
                 var geoData = await _geotogether.GetDeviceData();
-                _logger.LogInformation(geoData?.Power?.FirstOrDefault(p => p.Type == "ELECTRICITY")?.Watts.ToString());
+                _logger.LogInformation("Watts: " + geoData?.Power?.FirstOrDefault(p => p.Type == "ELECTRICITY")?.Watts.ToString());
                 await Task.Delay(3000);
             }
         }
