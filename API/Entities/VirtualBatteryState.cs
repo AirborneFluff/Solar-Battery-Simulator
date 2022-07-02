@@ -12,6 +12,6 @@ namespace API.Entities
         public double VirtualExportValue { get; set; }
         public double VirtualImportValue { get; set; }
         public double ChargeLevel { get; set; }
-        public DateTime Time { get; set; } = DateTime.UtcNow;
+        public long Time { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
     }
 }
