@@ -45,5 +45,27 @@ namespace API.Services
 
             return tokenHandler.WriteToken(token);
         }
+
+        public static DateTime? GetExpiration(string jwt) 
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+            if (token.Payload.Exp == null) return null;
+            var dateTime = DateTime.UnixEpoch.AddSeconds((double) token.Payload.Exp);
+
+            return dateTime;
+        }
+
+        public static bool Expired(string? jwt) 
+        {
+            if (jwt == null) return true;
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+            var exp = token.Payload.Exp;
+            if (exp == null) return true;
+            var expDate = DateTime.UnixEpoch.AddSeconds((double) exp - 60); // Add 1 minutes window
+            if (expDate <= DateTime.UtcNow) return true;
+            return false;
+        }
     }
 }
