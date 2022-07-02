@@ -13,6 +13,9 @@ namespace API.Data
         {
         }
 
+        public DbSet<VirtualBatterySystem> VBatterySystems { get; set; }
+        public DbSet<VirtualBatteryState> VBatteryStates { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);     
