@@ -64,6 +64,12 @@ namespace API.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("GeoBearerToken")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GeoDeviceId")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
@@ -122,6 +128,92 @@ namespace API.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("API.Entities.VirtualBatteryState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BatterySystemId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("ChargeLevel")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("RealExportValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("RealImportValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("VirtualExportValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("VirtualImportValue")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatterySystemId");
+
+                    b.ToTable("VBatteryStates");
+                });
+
+            modelBuilder.Entity("API.Entities.VirtualBatterySystem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("ChargeEfficiency")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("ChargeLevel")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("ContinuousChargeRate")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("ContinuousDischargeRate")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("DepthOfDischarge")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("DischargeEfficiency")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("LoggingPeriod")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("RealExportValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("RealImportValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("TotalCapacity")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("VirtualExportValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("VirtualImportValue")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("VBatterySystems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -227,6 +319,28 @@ namespace API.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("API.Entities.VirtualBatteryState", b =>
+                {
+                    b.HasOne("API.Entities.VirtualBatterySystem", "BatterySystem")
+                        .WithMany("SystemStates")
+                        .HasForeignKey("BatterySystemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BatterySystem");
+                });
+
+            modelBuilder.Entity("API.Entities.VirtualBatterySystem", b =>
+                {
+                    b.HasOne("API.Entities.AppUser", "AppUser")
+                        .WithMany("VirtualBatterySystems")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("API.Entities.AppRole", null)
@@ -271,6 +385,13 @@ namespace API.Migrations
             modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
                     b.Navigation("UserRoles");
+
+                    b.Navigation("VirtualBatterySystems");
+                });
+
+            modelBuilder.Entity("API.Entities.VirtualBatterySystem", b =>
+                {
+                    b.Navigation("SystemStates");
                 });
 #pragma warning restore 612, 618
         }

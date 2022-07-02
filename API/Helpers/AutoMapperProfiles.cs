@@ -10,6 +10,7 @@ namespace API.Helpers
         {
             CreateMap<AppUser, AppUserDTO>();
             CreateMap<RegisterDTO, AppUser>();
+            CreateMap<VirtualBatterySystem, VirtualBatterySystemDTO>();
         }
     }
 }

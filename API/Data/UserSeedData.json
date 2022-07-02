@@ -2,6 +2,18 @@
     {
         "FirstName": "Morgan",
         "LastName": "Proffitt",
-        "Email": "proffitt.m.98@gmail.com"
+        "Email": "proffitt.m.98@gmail.com",
+        "GeoDeviceId": "cf445191-19d0-4acb-9994-854c206eb02a",
+        "VirtualBatterySystems" : [
+            {
+                "ChargeLevel": 400,
+                "TotalCapacity": 4800,
+                "DepthOfDischarge": 0.95,
+                "ContinuousDischargeRate": 2400,
+                "ContinuousChargeRate": 3000,
+                "ChargeEfficiency": 0.94,
+                "DischargeEfficiency": 0.945
+            }
+        ]
     }
 ]

@@ -13,15 +13,17 @@ namespace API.Extensions
     {
         public static void AddApplicationsServices(this WebApplicationBuilder builder)
         {
-            builder.Services.AddSingleton<Geotogether>()
-                .AddHttpClient();
-            builder.Services.AddSingleton<IWorker, BatteryWorker>();
-            builder.Services.AddHostedService<BatteryService>();
             builder.Services.AddScoped<UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             builder.Services.AddDbContext<DataContext>(options => {
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            
+            
+            builder.Services.AddSingleton<Geotogether>()
+                .AddHttpClient();
+            builder.Services.AddSingleton<IWorker, BatteryWorker>();
+            builder.Services.AddHostedService<BatteryService>();
 
             return;
         }

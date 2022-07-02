@@ -3,6 +3,7 @@ using API.Entities;
 using API.Extensions;
 using API.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,13 @@ namespace API.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IMapper _mapper;
         private readonly TokenService _tokenService;
+        private readonly Geotogether _geo;
 
         public AccountController(UserManager<AppUser> userManager,
-            TokenService tokenService, IMapper mapper, SignInManager<AppUser> signInManager)
+            TokenService tokenService, IMapper mapper, SignInManager<AppUser> signInManager,
+            Geotogether geo)
         {
+            this._geo = geo;
             this._signInManager = signInManager;
             this._userManager = userManager;
             this._mapper = mapper;
