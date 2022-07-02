@@ -70,18 +70,18 @@ namespace API.Entities
             var virtualImport = GetDischargeRemainder(watts, duration);
             var virtualExport = GetChargeRemainder(watts, duration);
             
-            if (wattHours > 0)
+            if (watts > 0)
             {
                 RealImportValue += wattHours/1000;
                 VirtualImportValue += virtualImport/1000;
             }
-            if (wattHours < 0)
+            if (watts < 0)
             {
                 RealExportValue += wattHours/1000;
                 VirtualExportValue += virtualExport/1000;
             }
 
-            if (LastState?.Time.AddSeconds(LoggingPeriod) <= DateTime.UtcNow) LogCurrentState();
+            if (LastState?.Time + LoggingPeriod <= DateTimeOffset.Now.ToUnixTimeSeconds()) LogCurrentState();
             else if (LastState == null) LogCurrentState();
 
             return CurrentState;
