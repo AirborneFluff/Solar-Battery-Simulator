@@ -16,7 +16,8 @@ namespace API.Extensions
             builder.Services.AddScoped<UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             builder.Services.AddDbContext<DataContext>(options => {
-                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+                //options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             builder.Services.AddSingleton<SolarForecast>()
