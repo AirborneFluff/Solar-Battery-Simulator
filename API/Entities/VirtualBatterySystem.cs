@@ -1,4 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
+using API.DTOs;
+using API.Helpers;
 
 namespace API.Entities
 {
@@ -6,6 +9,7 @@ namespace API.Entities
     {
         public int Id { get; set; }
         public int AppUserId { get; set; }
+        [JsonIgnore]
         public AppUser? AppUser { get; set; }
         /// <summary>
         /// Time between storing system states in seconds. Default 5 minutes (300s)
@@ -81,8 +85,8 @@ namespace API.Entities
                 VirtualExportValue += virtualExport/1000;
             }
 
-            if (LastState?.Time + LoggingPeriod <= DateTimeOffset.Now.ToUnixTimeSeconds()) LogCurrentState();
-            else if (LastState == null) LogCurrentState();
+            //if (LastState?.Time + LoggingPeriod <= DateTimeOffset.Now.ToUnixTimeSeconds()) LogCurrentState();
+            //else if (LastState == null) LogCurrentState();
 
             return CurrentState;
         }
@@ -114,9 +118,46 @@ namespace API.Entities
             return totalWattHours - chargableWattHours;
         }
 
+        public void LogCurrentState(int unixLogTime)
+        {
+            VirtualBatteryState newState = new VirtualBatteryState
+                {
+                    RealExportValue = this.RealExportValue,
+                    RealImportValue = this.RealImportValue,
+                    VirtualExportValue = this.VirtualExportValue,
+                    VirtualImportValue = this.VirtualImportValue,
+                    ChargeLevel = this.ChargeLevel,
+                    Time = unixLogTime
+                };
+            SystemStates.Add(newState);
+        }
         public void LogCurrentState()
         {
             SystemStates.Add(CurrentState);
+        }
+    }
+
+    public static class VirtualBatterySystemExtension
+    {
+        public static string GetStatesAsCSV(this VirtualBatterySystem system, bool epochTimestamp)
+        {
+            List<VirtualBatteryState> states = new List<VirtualBatteryState>();
+            var firstRealImport = system.SystemStates.First().RealImportValue;
+            var firstVirtualImport = system.SystemStates.First().VirtualImportValue;
+            var firstRealExport = system.SystemStates.First().RealExportValue;
+            var firstVirtualExport = system.SystemStates.First().VirtualExportValue;
+
+            states = system.SystemStates.Select(s => new VirtualBatteryState
+            {
+                ChargeLevel = s.ChargeLevel,
+                RealImportValue = s.RealImportValue - firstRealImport,
+                VirtualImportValue = s.VirtualImportValue - firstVirtualImport,
+                RealExportValue = s.RealExportValue - firstRealExport,
+                VirtualExportValue = s.VirtualExportValue - firstVirtualExport,
+                Time = s.Time
+            }).ToList();
+
+            return CsvSerializer.SerializeToCsv<VirtualBatteryState>(states, !epochTimestamp);
         }
     }
 }

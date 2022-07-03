@@ -4,9 +4,15 @@
         "LastName": "Proffitt",
         "Email": "proffitt.m.98@gmail.com",
         "GeoDeviceId": "cf445191-19d0-4acb-9994-854c206eb02a",
+        "SolarLat": 53.64564464296706,
+        "SolarLon": -2.9850300375868684,
+        "SolarDec": 29,
+        "SolarAz": -41.6,
+        "SolarKwp": 3,
+
         "VirtualBatterySystems" : [
             {
-                "ChargeLevel": 400,
+                "ChargeLevel": 3650,
                 "TotalCapacity": 4800,
                 "DepthOfDischarge": 0.95,
                 "ContinuousDischargeRate": 2400,

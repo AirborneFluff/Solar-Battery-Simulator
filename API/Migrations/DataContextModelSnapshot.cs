@@ -103,6 +103,26 @@ namespace API.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("_az")
+                        .HasColumnType("REAL")
+                        .HasColumnName("SolarAz");
+
+                    b.Property<double>("_dec")
+                        .HasColumnType("REAL")
+                        .HasColumnName("SolarDec");
+
+                    b.Property<double>("_kwp")
+                        .HasColumnType("REAL")
+                        .HasColumnName("SolarKwp");
+
+                    b.Property<double>("_lat")
+                        .HasColumnType("REAL")
+                        .HasColumnName("SolarLat");
+
+                    b.Property<double>("_lon")
+                        .HasColumnType("REAL")
+                        .HasColumnName("SolarLon");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")

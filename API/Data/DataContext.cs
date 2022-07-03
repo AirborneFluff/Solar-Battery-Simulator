@@ -18,7 +18,7 @@ namespace API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);     
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<AppUser>()
                 .HasMany(au => au.UserRoles)

@@ -1,13 +1,17 @@
+using System.Collections.ObjectModel;
 using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helpers;
+using API.Models;
+using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ServiceStack.Text;
 
 namespace API.Controllers
 {
@@ -18,8 +22,10 @@ namespace API.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public VBSController(Geotogether geo, UserManager<AppUser> userManager, DataContext context, IMapper mapper)
+        private readonly SolarForecast _solar;
+        public VBSController(Geotogether geo, UserManager<AppUser> userManager, DataContext context, IMapper mapper, SolarForecast solar)
         {
+            this._solar = solar;
             this._mapper = mapper;
             this._context = context;
             this._userManager = userManager;
@@ -37,18 +43,82 @@ namespace API.Controllers
             return _mapper.Map<VirtualBatterySystemDTO>(vbs);
         }
 
-        [HttpGet("{id}/csv")]
-        public async Task<ActionResult<string>> GetCSV(int id)
+        [HttpPost("{id}/simulate")]
+        public async Task<ActionResult> ForceSimulation(int id)
         {
             var userId = User.GetUserId();
             var user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
-            var vbs = await _context.VBatterySystems
-                .Include(vbs => vbs.SystemStates)
-                .FirstOrDefaultAsync(u => u.Id == id && u.AppUserId == userId);
-            if (vbs == null) return NotFound("No system found by that Id");
-            if (vbs.SystemStates.Count() <= 0) return NotFound("No data has been collected for that system yet");
+            var vbs = await _context.VBatterySystems.FirstOrDefaultAsync(u => u.Id == id && u.AppUserId == userId);
+            if (vbs == null) return NotFound();
 
-            return CsvSerializer.SerializeToCsv<VirtualBatteryState>(vbs.SystemStates);
+            //var forecast = await _solar.GetForecastString(user.SolarForecastParams);
+            
+            var forecast = await System.IO.File.ReadAllTextAsync("Data/SolarForecast.json");
+            var wattPeriods = SolarForecast.GetWattPeriods(forecast);
+            if (wattPeriods == null) return BadRequest();
+
+            var simTime = wattPeriods.First().Key;
+            var simPower = wattPeriods.First().Value;
+
+            var currentPeriodIndex = 0;
+            while (simTime <= wattPeriods.Last().Key)
+            {
+                vbs.ApplyPower(simPower, 3); // Apply power for 3 seconds
+                simTime += 3; // Add 3 seconds to counter
+                if (simTime > wattPeriods.ElementAt(currentPeriodIndex + 1).Key) // Check if time period has changed
+                {
+                    if (currentPeriodIndex + 1 == wattPeriods.Count()) break;
+                    currentPeriodIndex += 1; // Increment index counter
+                    simPower = wattPeriods.ElementAt(currentPeriodIndex).Value; // Set new power
+                }
+                if (simTime % 30 == 0) vbs.LogCurrentState(simTime); // Log every 30 seconds
+            }
+
+            return Ok(vbs.GetStatesAsCSV(false));
+        }
+
+        [HttpGet("{id}/history")]
+        public async Task<ActionResult<string>> GetCSV(int id, [FromQuery] VBSDataQueryParams vbsParams)
+        {
+            var userId = User.GetUserId();
+            var user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null) BadRequest();
+
+            var vbs = await _context.VBatterySystems.FirstOrDefaultAsync(s => s.Id == id && s.AppUserId == userId);
+            if (vbs == null) NotFound();
+
+            var startDate = vbsParams.StartDate.ToUnixTime();
+            var endDate = vbsParams.EndDate.ToUnixTime();
+
+            var states = await _context.VBatteryStates
+                .Where(s => s.Time >= startDate)
+                .Where(s => s.Time < endDate)
+                .Where(s => s.BatterySystemId == id)
+                .ToListAsync();
+
+            if (states == null) return NotFound("No system found by that Id");
+            if (states.Count() <= 0) return NotFound("No data has been collected for that system yet");
+
+            if (vbsParams.RelativeValues)
+            {
+                var firstRealImport = states.First().RealImportValue;
+                var firstVirtualImport = states.First().VirtualImportValue;
+                var firstRealExport = states.First().RealExportValue;
+                var firstVirtualExport = states.First().VirtualExportValue;
+
+                states = states.Select(s => new VirtualBatteryState
+                {
+                    RealImportValue = s.RealImportValue - firstRealImport,
+                    VirtualImportValue = s.VirtualImportValue - firstVirtualImport,
+                    RealExportValue = s.RealExportValue - firstRealExport,
+                    VirtualExportValue = s.VirtualExportValue - firstVirtualExport
+                }).ToList();
+            }
+
+            if (vbsParams.Csv) return Ok(API.Helpers.CsvSerializer
+                .SerializeToCsv<VirtualBatteryState>(states, !vbsParams.EpochTimestamp));
+
+            return NotFound("CSV is the only option right now");
         }
 
     }

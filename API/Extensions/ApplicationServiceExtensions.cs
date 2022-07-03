@@ -18,8 +18,9 @@ namespace API.Extensions
             builder.Services.AddDbContext<DataContext>(options => {
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-            
-            
+
+            builder.Services.AddSingleton<SolarForecast>()
+                .AddHttpClient();
             builder.Services.AddSingleton<Geotogether>()
                 .AddHttpClient();
             builder.Services.AddSingleton<IWorker, BatteryWorker>();

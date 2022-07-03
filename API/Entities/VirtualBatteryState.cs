@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace API.Entities
 {
     public class VirtualBatteryState
     {
         public int Id { get; set; }
         public int BatterySystemId { get; set; }
+        [JsonIgnore]
         public VirtualBatterySystem? BatterySystem { get; set; }
 
         
