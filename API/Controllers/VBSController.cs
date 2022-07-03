@@ -112,7 +112,8 @@ namespace API.Controllers
                     RealImportValue = s.RealImportValue - firstRealImport,
                     VirtualImportValue = s.VirtualImportValue - firstVirtualImport,
                     RealExportValue = s.RealExportValue - firstRealExport,
-                    VirtualExportValue = s.VirtualExportValue - firstVirtualExport
+                    VirtualExportValue = s.VirtualExportValue - firstVirtualExport,
+                    Time = s.Time
                 }).ToList();
             }
 
