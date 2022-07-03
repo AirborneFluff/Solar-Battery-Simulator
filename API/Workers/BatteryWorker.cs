@@ -9,6 +9,7 @@ using API.Services;
 using API.Workers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace API.Workers
 {
@@ -17,9 +18,16 @@ namespace API.Workers
         private readonly ILogger<BatteryWorker> _logger;
         private readonly Geotogether _geotogether;
         private readonly DataContext _context;
+        private readonly GeoLoginDto _loginInfo;
 
-        public BatteryWorker(ILogger<BatteryWorker> logger, Geotogether geotogether, IServiceScopeFactory scopeFactory)
+        public BatteryWorker(ILogger<BatteryWorker> logger, Geotogether geotogether, IServiceScopeFactory scopeFactory, IConfiguration config)
         {
+            _loginInfo = new GeoLoginDto
+            {
+                Identity = config.GetValue<string>("GeoSettings:Identity"),
+                Password = config.GetValue<string>("GeoSettings:Password")
+            };
+
             this._geotogether = geotogether;
             this._logger = logger;
             this._context = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
@@ -33,9 +41,7 @@ namespace API.Workers
                 return;
             }
 
-            var userData = await System.IO.File.ReadAllTextAsync("geologin.json");
-            var loginData = JsonSerializer.Deserialize<GeoLoginDto>(userData);
-            if (loginData == null)
+            if (_loginInfo == null)
             {
                 _logger.LogWarning("Couldn't retrieve user GeoLogin information");
                 return;
@@ -44,7 +50,7 @@ namespace API.Workers
             var user = await _context.Users
                 .Include(u => u.VirtualBatterySystems)
                 .ThenInclude(v => v.SystemStates)
-                .FirstOrDefaultAsync(u => u.NormalizedEmail == loginData.Identity.ToUpper());
+                .FirstOrDefaultAsync(u => u.NormalizedEmail == _loginInfo.Identity.ToUpper());
             
             if (user == null)
             {
@@ -52,7 +58,7 @@ namespace API.Workers
                 return;
             }
 
-            if (TokenService.Expired(user.GeoBearerToken)) await GeoLogin(user, loginData.Identity, loginData.Password);
+            if (TokenService.Expired(user.GeoBearerToken)) await GeoLogin(user, _loginInfo.Identity, _loginInfo.Password);
 
             foreach (var vbs in user.VirtualBatterySystems)
             {
@@ -69,7 +75,7 @@ namespace API.Workers
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (TokenService.Expired(user.GeoBearerToken)) await GeoLogin(user, loginData.Identity, loginData.Password);
+                if (TokenService.Expired(user.GeoBearerToken)) await GeoLogin(user, _loginInfo.Identity, _loginInfo.Password);
 
                 var data = await GetLiveData(user);
                 if (data == null) break;

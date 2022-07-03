@@ -85,8 +85,8 @@ namespace API.Entities
                 VirtualExportValue += virtualExport/1000;
             }
 
-            //if (LastState?.Time + LoggingPeriod <= DateTimeOffset.Now.ToUnixTimeSeconds()) LogCurrentState();
-            //else if (LastState == null) LogCurrentState();
+            if (LastState?.Time + LoggingPeriod <= DateTimeOffset.Now.ToUnixTimeSeconds()) LogCurrentState();
+            else if (LastState == null) LogCurrentState();
 
             return CurrentState;
         }
