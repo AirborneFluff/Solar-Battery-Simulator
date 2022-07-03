@@ -72,7 +72,7 @@ app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyHeader()
     .AllowAnyMethod()
     .AllowCredentials()
-    .WithOrigins("https://localhost:4200"));
+    .WithOrigins(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" ? Environment.GetEnvironmentVariable("HOME_IP") : "https://localhost:4200"));
 
 app.UseAuthentication();
 
