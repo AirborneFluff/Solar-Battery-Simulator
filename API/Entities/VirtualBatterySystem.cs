@@ -111,11 +111,13 @@ namespace API.Entities
             var totalWattHours = (Math.Abs(watts) * duration) / 3600; // Total watt hours being currently imported
 
             watts = Math.Min(ContinuousChargeRate, Math.Abs(watts)); // Clamp usable watts to discharge rate
-            var chargableWattHours = (Math.Abs(watts) * duration) / 3600; // Total watt hours possible to output
+            var availableWattHours = (Math.Abs(watts) * duration) / 3600; // Total watt hours possible to output
+            var chargableWattHours = Math.Min(availableWattHours*ChargeEfficiency, TotalCapacity - ChargeLevel);
+            var consumedWattHours = chargableWattHours / ChargeEfficiency;
 
-            ChargeLevel = Math.Min(ChargeLevel + chargableWattHours*ChargeEfficiency, TotalCapacity);
+            ChargeLevel = Math.Min(ChargeLevel + availableWattHours*ChargeEfficiency, TotalCapacity);
 
-            return totalWattHours - chargableWattHours;
+            return totalWattHours - consumedWattHours;
         }
 
         public void LogCurrentState(int unixLogTime)
