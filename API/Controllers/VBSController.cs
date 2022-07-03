@@ -108,6 +108,7 @@ namespace API.Controllers
 
                 states = states.Select(s => new VirtualBatteryState
                 {
+                    ChargeLevel = s.ChargeLevel,
                     RealImportValue = s.RealImportValue - firstRealImport,
                     VirtualImportValue = s.VirtualImportValue - firstVirtualImport,
                     RealExportValue = s.RealExportValue - firstRealExport,
