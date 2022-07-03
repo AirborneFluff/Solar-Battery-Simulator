@@ -109,10 +109,10 @@ namespace API.Controllers
                 states = states.Select(s => new VirtualBatteryState
                 {
                     ChargeLevel = s.ChargeLevel,
-                    RealImportValue = s.RealImportValue - firstRealImport,
-                    VirtualImportValue = s.VirtualImportValue - firstVirtualImport,
-                    RealExportValue = s.RealExportValue - firstRealExport,
-                    VirtualExportValue = s.VirtualExportValue - firstVirtualExport,
+                    RealImportValue = (s.RealImportValue - firstRealImport)*1000,
+                    VirtualImportValue = (s.VirtualImportValue - firstVirtualImport)*1000,
+                    RealExportValue = (s.RealExportValue - firstRealExport)*1000,
+                    VirtualExportValue = (s.VirtualExportValue - firstVirtualExport)*1000,
                     Time = s.Time
                 }).ToList();
             }
