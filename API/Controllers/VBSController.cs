@@ -87,8 +87,8 @@ namespace API.Controllers
             var vbs = await _context.VBatterySystems.FirstOrDefaultAsync(s => s.Id == id && s.AppUserId == userId);
             if (vbs == null) NotFound();
 
-            var startDate = vbsParams.StartDate.ToUnixTime();
-            var endDate = vbsParams.EndDate.ToUnixTime();
+            var startDate = vbsParams.StartTime;
+            var endDate = vbsParams.EndTime;
 
             var states = await _context.VBatteryStates
                 .Where(s => s.Time >= startDate)
