@@ -74,6 +74,9 @@ app.UseCors(x => x.AllowAnyHeader()
     .AllowCredentials()
     .WithOrigins(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" ? Environment.GetEnvironmentVariable("HOME_IP") : "https://localhost:4200"));
 
+
+app.UseRouting();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -81,7 +84,6 @@ app.UseAuthorization();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
