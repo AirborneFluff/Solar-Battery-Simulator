@@ -12,7 +12,8 @@
 
         "VirtualBatterySystems" : [
             {
-                "ChargeLevel": 3650,
+                "LoggingPeriod": 120,
+                "ChargeLevel": 2100,
                 "TotalCapacity": 4800,
                 "DepthOfDischarge": 0.95,
                 "ContinuousDischargeRate": 2400,

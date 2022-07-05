@@ -14,7 +14,7 @@ namespace API.Entities
         /// <summary>
         /// Time between storing system states in seconds. Default 5 minutes (300s)
         /// </summary>
-        public int LoggingPeriod { get; set; } = 30;
+        public int LoggingPeriod { get; set; } = 300;
         public double RealExportValue { get; set; }
         public double RealImportValue { get; set; }
         public double VirtualExportValue { get; set; }

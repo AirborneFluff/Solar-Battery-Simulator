@@ -7,7 +7,7 @@ namespace API.DTOs
     public class VirtualBatterySystemDTO
     {
         public int Id { get; set; }
-        public int LoggingPeriod { get; set; } = 30;
+        public int LoggingPeriod { get; set; }
         public double RealExportValue { get; set; }
         public double RealImportValue { get; set; }
         public double VirtualExportValue { get; set; }
