@@ -161,7 +161,7 @@ namespace API.Controllers
             }).ToList();
 
             return Ok(API.Helpers.CsvSerializer
-                .SerializeToCsv<VirtualBatteryState>(states));
+                .SerializeToCsv<VirtualBatteryState>(states, true));
         }
     }
 }
