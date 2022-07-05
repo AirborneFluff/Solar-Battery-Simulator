@@ -123,5 +123,45 @@ namespace API.Controllers
             return NotFound("CSV is the only option right now");
         }
 
+        [HttpGet("{id}/history/today")]
+        public async Task<ActionResult<string>> GetCSVToday(int id)
+        {
+            var userId = User.GetUserId();
+            var user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null) BadRequest();
+
+            var vbs = await _context.VBatterySystems.FirstOrDefaultAsync(s => s.Id == id && s.AppUserId == userId);
+            if (vbs == null) NotFound();
+
+            var startDate = DateTime.Today.ToUnixTime();
+            var endDate = DateTime.Today.AddDays(1).ToUnixTime();
+
+            var states = await _context.VBatteryStates
+                .Where(s => s.Time >= startDate)
+                .Where(s => s.Time < endDate)
+                .Where(s => s.BatterySystemId == id)
+                .ToListAsync();
+
+            if (states == null) return NotFound("No system found by that Id");
+            if (states.Count() <= 0) return NotFound("No data has been collected for that system yet");
+
+            var firstRealImport = states.First().RealImportValue;
+            var firstVirtualImport = states.First().VirtualImportValue;
+            var firstRealExport = states.First().RealExportValue;
+            var firstVirtualExport = states.First().VirtualExportValue;
+
+            states = states.Select(s => new VirtualBatteryState
+            {
+                ChargeLevel = s.ChargeLevel,
+                RealImportValue = (s.RealImportValue - firstRealImport)*1000,
+                VirtualImportValue = (s.VirtualImportValue - firstVirtualImport)*1000,
+                RealExportValue = (s.RealExportValue - firstRealExport)*1000,
+                VirtualExportValue = (s.VirtualExportValue - firstVirtualExport)*1000,
+                Time = s.Time
+            }).ToList();
+
+            return Ok(API.Helpers.CsvSerializer
+                .SerializeToCsv<VirtualBatteryState>(states));
+        }
     }
 }
