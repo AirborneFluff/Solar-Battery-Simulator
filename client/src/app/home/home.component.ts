@@ -39,8 +39,10 @@ export class HomeComponent implements OnInit {
               fill: false,
               tension: 0.5,
               borderColor: 'black',
-              backgroundColor: 'rgba(255,0,0,0.3)',
+              borderWidth: 1,
+              backgroundColor: 'rgba(0,255,0,0.9)',
               type: "line",
+              pointRadius: 1
             },
             {
               data: response.map(e => e.ri),
@@ -48,7 +50,19 @@ export class HomeComponent implements OnInit {
               fill: false,
               tension: 0.5,
               borderColor: 'black',
-              backgroundColor: 'rgba(255,0,0,0.3)',
+              borderWidth: 1,
+              backgroundColor: 'rgba(255,0,0,0.9)',
+              pointRadius: 1
+            },
+            {
+              data: response.map(e => (e.ri - e.vi)*29/1000 - (e.re - e.ve)*7.5/1000),
+              label: 'Potential Savings',
+              fill: false,
+              tension: 0.5,
+              borderColor: 'black',
+              borderWidth: 1,
+              backgroundColor: 'rgba(0,0,255,0.9)',
+              pointRadius: 1
             }
           ]
         };
