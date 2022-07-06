@@ -1,0 +1,25 @@
+<form class="form-signin text-center" [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()" autocomplete="off">
+  <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+  <h1 class="h3 mb-3 font-weight-normal">Sign in</h1>
+  <div *ngIf="redirectParams" class="alert alert-warning" role="alert">
+      Your session has expired. Please sign-in to return to the previous page
+  </div>
+  <app-text-input
+      [formControl]="loginForm.controls['email']"
+      [label]="'Email'">
+  </app-text-input>
+  <app-text-input
+      [formControl]="loginForm.controls['password']"
+      [label]="'Password'"
+      [type]="'password'">
+  </app-text-input>   
+  <div *ngIf="loginForm.errors?.invalidCombination" class="mb-2 invalid-feedback" style="display: block;">
+      Incorrect email or password
+  </div>
+  <div class="checkbox mb-3">
+      <label>
+          <input type="checkbox" value="remember-me" [checked]="rememberEmail" (change)="setRememberMe()"> Remember me
+      </label>
+  </div>
+  <button class="btn btn-lg btn-primary btn-block" [disabled]="!loginForm.valid">Sign in</button>
+</form>

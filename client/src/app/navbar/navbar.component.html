@@ -1,0 +1,14 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light" ngxNavbarDynamicExpand>
+  <div class="container">
+      <a class="navbar-brand" routerLink="">Virtual Battery Simulator</a>
+      <button class="navbar-toggler" type="button" (click)="collapse.toggle()" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <ngx-navbar-collapse #collapse="ngxNavbarCollapse">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" routerLink="home" (click)="collapse.toggle()">Home</a>
+          <a class="nav-item nav-link" (click)="logout()" (click)="collapse.toggle()" *ngIf="(accountService.currentUser$ | async) !== null">Logout</a>
+        </div>
+      </ngx-navbar-collapse>
+  </div>
+</nav>

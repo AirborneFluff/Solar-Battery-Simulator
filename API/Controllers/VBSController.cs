@@ -124,7 +124,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}/history/today")]
-        public async Task<ActionResult<string>> GetCSVToday(int id)
+        public async Task<ActionResult<string>> GetToday(int id)
         {
             var userId = User.GetUserId();
             var user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
@@ -150,18 +150,17 @@ namespace API.Controllers
             var firstRealExport = states.First().RealExportValue;
             var firstVirtualExport = states.First().VirtualExportValue;
 
-            states = states.Select(s => new VirtualBatteryState
+            var output = states.Select(s => new VirtualBatteryStateDTO
             {
-                ChargeLevel = s.ChargeLevel,
-                RealImportValue = (s.RealImportValue - firstRealImport)*1000,
-                VirtualImportValue = (s.VirtualImportValue - firstVirtualImport)*1000,
-                RealExportValue = (s.RealExportValue - firstRealExport)*1000,
-                VirtualExportValue = (s.VirtualExportValue - firstVirtualExport)*1000,
-                Time = s.Time
+                CL = (int)s.ChargeLevel,
+                RI = (int)((s.RealImportValue - firstRealImport) * 1000),
+                VI = (int)((s.VirtualImportValue - firstVirtualImport) * 1000),
+                RE = (int)((s.RealExportValue - firstRealExport) * 1000),
+                VE = (int)((s.VirtualExportValue - firstVirtualExport) * 1000),
+                X = (int) (s.Time - DateTime.Today.ToUnixTime())
             }).ToList();
 
-            return Ok(API.Helpers.CsvSerializer
-                .SerializeToCsv<VirtualBatteryState>(states, true));
+            return Ok(output);
         }
     }
 }
