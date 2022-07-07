@@ -43,7 +43,27 @@ namespace API.Controllers
             return _mapper.Map<VirtualBatterySystemDTO>(vbs);
         }
 
-        [HttpPost("{id}/simulate")]
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<VirtualBatterySystemDTO>> UpdateVirtualBatterySystem(int id, VirtualBatterySystemUpdateDTO updateDto)
+        {
+            var userId = User.GetUserId();
+            var user = _userManager.Users.FirstOrDefault(u => u.Id == userId);
+            var vbs = await _context.VBatterySystems.FirstOrDefaultAsync(u => u.Id == id && u.AppUserId == userId);
+            if (vbs == null) return NotFound();
+
+            vbs.LoggingPeriod = updateDto.LoggingPeriod == null ? vbs.LoggingPeriod : (int)updateDto.LoggingPeriod;
+            vbs.TotalCapacity = updateDto.TotalCapacity == null ? vbs.TotalCapacity : (double)updateDto.TotalCapacity;
+            vbs.DepthOfDischarge = updateDto.DepthOfDischarge == null ? vbs.DepthOfDischarge : (double)updateDto.DepthOfDischarge;
+            vbs.ContinuousDischargeRate = updateDto.ContinuousDischargeRate == null ? vbs.ContinuousDischargeRate : (double)updateDto.ContinuousDischargeRate;
+            vbs.ContinuousChargeRate = updateDto.ContinuousChargeRate == null ? vbs.ContinuousChargeRate : (double)updateDto.ContinuousChargeRate;
+            vbs.ChargeEfficiency = updateDto.ChargeEfficiency == null ? vbs.ChargeEfficiency : (double)updateDto.ChargeEfficiency;
+            vbs.DischargeEfficiency = updateDto.DischargeEfficiency == null ? vbs.DischargeEfficiency : (double)updateDto.DischargeEfficiency;
+
+            if (await _context.SaveChangesAsync() > 0) return Ok(_mapper.Map<VirtualBatterySystemDTO>(vbs));
+
+            return BadRequest("No changes made");
+        }
+
         public async Task<ActionResult> ForceSimulation(int id)
         {
             var userId = User.GetUserId();
@@ -149,6 +169,7 @@ namespace API.Controllers
             var firstVirtualImport = states.First().VirtualImportValue;
             var firstRealExport = states.First().RealExportValue;
             var firstVirtualExport = states.First().VirtualExportValue;
+            var firstTime = states.First().Time;
 
             var output = states.Select(s => new VirtualBatteryStateDTO
             {
@@ -157,7 +178,7 @@ namespace API.Controllers
                 VI = (int)((s.VirtualImportValue - firstVirtualImport) * 1000),
                 RE = (int)((s.RealExportValue - firstRealExport) * 1000),
                 VE = (int)((s.VirtualExportValue - firstVirtualExport) * 1000),
-                X = (int) (s.Time - DateTime.Today.ToUnixTime())
+                X = (int) (s.Time - firstTime)
             }).ToList();
 
             return Ok(output);
