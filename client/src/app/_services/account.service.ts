@@ -31,6 +31,12 @@ export class AccountService {
     this.currentUserSource.next(user);
   }
 
+  getUserDefaultSystemId() {
+    let user: User;
+    this.currentUser$.subscribe(x => user = x);
+    return user.defaultSystemId;
+  }
+
   logout(){
     localStorage.removeItem('user');
     this.currentUserSource.next(null);

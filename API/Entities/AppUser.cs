@@ -9,6 +9,7 @@ namespace API.Entities
     {
         public string? GeoBearerToken { get; set; }
         public string? GeoDeviceId { get; set; }
+        public int? DefaultSystemId { get; set; }
 
         public double SolarLat { get; set; }
         public double SolarLon { get; set; }

@@ -13,6 +13,7 @@ import { NgxNavbarModule } from 'ngx-bootstrap-navbar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeComponent } from './home/home.component'
 import { JwtInterceptor } from './_interceptors/jwt.interceptor';
+import { BatteryStateComponent } from './_graphs/battery-state/battery-state.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { JwtInterceptor } from './_interceptors/jwt.interceptor';
     TextInputComponent,
     NavbarComponent,
     HomeComponent,
+    BatteryStateComponent,
   ],
   imports: [
     BrowserModule,

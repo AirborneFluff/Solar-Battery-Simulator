@@ -1,4 +1,11 @@
-<div style="display: block;" class="container">
+<div class="container">
+  <h1 class="display-4 font-weight-normal">Current Charge</h1>
+  <div class="container d-flex justify-content-center">
+    <app-battery-state [chargeLevel]="systemChargeLevel"></app-battery-state>
+  </div>
+</div>
+
+<!--div style="display: block;" class="container">
   <canvas baseChart
     [type]="'line'"
     [data]="lineChartData"
@@ -6,4 +13,4 @@
     [legend]="lineChartLegend"
     [plugins]="lineChartPlugins">
   </canvas>
-</div>
+</div-->

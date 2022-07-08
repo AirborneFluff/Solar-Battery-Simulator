@@ -8,13 +8,7 @@ namespace API.DTOs
     {
         public int Id { get; set; }
         public int LoggingPeriod { get; set; }
-        public double RealExportValue { get; set; }
-        public double RealImportValue { get; set; }
-        public double VirtualExportValue { get; set; }
-        public double VirtualImportValue { get; set; }
-        public ICollection<VirtualBatteryState> SystemStates { get; set; } = new Collection<VirtualBatteryState>();
 
-        public VirtualBatteryState? LastState { get => SystemStates?.LastOrDefault(); }
         public double ChargeLevel { get; set; }
         public string ChargePercentage
         {
