@@ -9,10 +9,10 @@
         "SolarDec": 29,
         "SolarAz": -41.6,
         "SolarKwp": 3,
-        "DefaultVbsId": 1,
 
         "VirtualBatterySystems" : [
             {
+                "Default": true,
                 "LoggingPeriod": 120,
                 "ChargeLevel": 2100,
                 "TotalCapacity": 4800,

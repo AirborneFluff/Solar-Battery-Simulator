@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ChartDataset } from 'chart.js';
 import { environment } from 'src/environments/environment';
 import { VirtualBatterySystem } from '../_models/VBS';
+import { VBSGraphDataset } from '../_models/VBSGraphData';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class VbsService {
   constructor(private http: HttpClient, private router: Router) { }
 
   getTodaysHistory(id: number) {
-    return this.http.get(this.baseUrl + id + "/history/today")
+    return this.http.get<VBSGraphDataset[]>(this.baseUrl + id + "/history/today")
   }
 
   getVBS(id: number) {

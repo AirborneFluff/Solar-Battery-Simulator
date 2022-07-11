@@ -11,6 +11,7 @@ namespace API.Entities
         public int AppUserId { get; set; }
         [JsonIgnore]
         public AppUser? AppUser { get; set; }
+        public bool Default { get; set; }
         /// <summary>
         /// Time between storing system states in seconds. Default 5 minutes (300s)
         /// </summary>

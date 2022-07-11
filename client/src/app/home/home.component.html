@@ -1,4 +1,9 @@
 <div class="container">
+  <h1 class="display-4 font-weight-normal">Todays Savings</h1>
+  <h1 class="display-4 font-weight-normal">{{this.systemSavings}}</h1>
+</div>
+
+<div class="container">
   <h1 class="display-4 font-weight-normal">Current Charge</h1>
   <div class="container d-flex justify-content-center">
     <app-battery-state [chargeLevel]="systemChargeLevel"></app-battery-state>

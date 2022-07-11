@@ -14,14 +14,25 @@ import { VbsService } from '../_services/vbs.service';
 export class HomeComponent implements OnInit {
   defaultSystem: VirtualBatterySystem;
   systemChargeLevel: number;
+  systemSavings: number;
 
   constructor(private vbs: VbsService, private route: ActivatedRoute, private accountService: AccountService) { }
 
   ngOnInit(): void {
-    this.vbs.getVBS(this.accountService.getUserDefaultSystemId()).subscribe({
+    this.vbs.getVBS(1).subscribe({
       next: (response: VirtualBatterySystem) => {
         this.defaultSystem = response;
         this.systemChargeLevel = Number.parseFloat(response.chargePercentage);
+      },
+      error: e => {
+        console.log(e);
+      }
+    })
+
+    this.vbs.getTodaysHistory(1).subscribe({
+      next: response => {
+        const x = response[response.length - 1];
+        this.systemSavings = (x.ri - x.vi) * 0.295 - (x.re - x.ve) * 0.075
       },
       error: e => {
         console.log(e);
